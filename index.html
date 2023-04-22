@@ -4,9 +4,44 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>Tic-Tac-Toe</title>
   </head>
   <body>
+    <div class="page-container">
+      <h1>Tic-Tac-Toe</h1>
+      <p class="turn-order"></p>
+      <div class="board-container"></div>
+      <div class="token-container">
+        <div class="player1Btn">
+          <p>
+            <label for="p1Name" class="p1Label">Player 1 Name:</label>
+            <form action="#" class="p1Form">
+            <input type="text" id="p1Name" />
+            <button type="submit" class="p1NameBtn">Enter</button>
+
+          </form>
+          </p>
+          <div class="p1Token">
+            <button class="tokenBtn p1">o</button>
+            <button class="tokenBtn p1">x</button>
+          </div>
+        </div>
+        <div class="player2Btn">
+          <p>
+            <label for="p2Name" class="p2Label">Player 2 Name:</label>
+            <form action="#" class="p2Form">
+            <input type="text" id="p2Name" />
+            <button type="submit" class="p2NameBtn">Enter</button>
+          </form>
+          </p>
+          <div class="p2Token">
+            <button class="tokenBtn p2">o</button>
+            <button class="tokenBtn p2">x</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>

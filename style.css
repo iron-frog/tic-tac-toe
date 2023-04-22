@@ -1,0 +1,77 @@
+button {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.board-container {
+  display: grid;
+  grid-template-columns: 50px 50px 50px;
+}
+
+.board-container > button {
+  background-color: white;
+  height: 50px;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+
+.token-container {
+  display: flex;
+  margin-top: 50px;
+  gap: 50px;
+}
+
+.token-container .tokenBtn {
+  background-color: grey;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+}
+
+.player1Btn,
+.player2Btn {
+  display: flex;
+  flex-direction: column;
+}
+
+.p1Token,
+.p2Token {
+  display: flex;
+  gap: 10px;
+}
+.p1Token button,
+.p2Token button {
+  flex: 1;
+}
+
+.player2Btn form,
+.player1Btn form {
+  display: flex;
+}
+
+form button {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+input {
+  width: 100%;
+}
+
+.board-container > button:hover {
+  background-color: #dcdcdc90;
+  box-sizing: border-box;
+}
+
+.token-container .tokenBtn:hover {
+  transform: scale(0.95);
+  cursor: pointer;
+}
+
+.tokenBtn.selected {
+  background-color: green;
+}
