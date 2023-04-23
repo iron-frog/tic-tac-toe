@@ -12,6 +12,14 @@ const GameBoard = (() => {
     }
   }
 
+  const resetBoard = () => {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        board[i][j] = "";
+      }
+    }
+  };
+
   const addToken = (token, board, row, column) => {
     board[row][column] = `${token}`;
   };
@@ -53,9 +61,11 @@ const GameBoard = (() => {
         }
       }
     }
-
-    if (row + column == 2) {
+    console.log({ row, column });
+    if (Number(row) + Number(column) == 2) {
+      console.log("hello");
       for (let i = 0; i < board.length; i++) {
+        //console.log({ row, column }, board[i + 1][2 - i]);
         if (board[i][2 - i].includes(token) === false) {
           break;
         } else {
@@ -63,14 +73,19 @@ const GameBoard = (() => {
         }
       }
     }
-    if (rowMatch === 3 || columnMatch === 3 || diagAMatch === 3 || diagBMatch) {
+    if (
+      rowMatch === 3 ||
+      columnMatch === 3 ||
+      diagAMatch === 3 ||
+      diagBMatch === 3
+    ) {
       return true;
     }
   };
 
   const getBoard = () => board;
 
-  return { initBoard, getBoard, addToken, checkCell, checkWin };
+  return { initBoard, getBoard, addToken, checkCell, checkWin, resetBoard };
 })();
 
 const Player = () => {
@@ -88,6 +103,8 @@ const Player = () => {
 
 //renders window
 const DisplayController = (() => {
+  const turnText = document.querySelector(".turn-order");
+
   const renderBoard = (board, boardContainer) => {
     boardContainer.innerHTML = "";
     for (let i = 0; i < board.length; i++) {
@@ -102,8 +119,11 @@ const DisplayController = (() => {
   };
 
   const renderTurn = (player) => {
-    const turnText = document.querySelector(".turn-order");
     turnText.textContent = `${player.getName()}'s turn: ${player.getToken()}`;
+  };
+
+  const resetTurn = () => {
+    turnText.textContent = "Player 1 Starts";
   };
 
   const winScreen = (player) => {
@@ -114,7 +134,7 @@ const DisplayController = (() => {
     winText.textContent = `${player.getName()} WINS!`;
   };
 
-  return { renderBoard, winScreen, renderTurn };
+  return { renderBoard, winScreen, renderTurn, resetTurn };
 })();
 
 //Controls game flow
@@ -128,6 +148,7 @@ const GameController = (() => {
   const p2Label = document.querySelector(".p2Label");
   const p1Input = document.querySelector("#p1Name");
   const p2Input = document.querySelector("#p2Name");
+  const overlay = document.querySelector(".win-overlay");
 
   GameBoard.initBoard();
   const board = GameBoard.getBoard();
@@ -203,9 +224,9 @@ const GameController = (() => {
 
   const playRound = () => {
     currentPlayer = player1.getActive() ? player1 : player2;
-    console.log(`${currentPlayer.getName()} turn:`, currentPlayer.getToken());
+    //console.log(`${currentPlayer.getName()} turn:`, currentPlayer.getToken());
     display.renderTurn(currentPlayer);
-    console.table(board);
+    //console.table(board);
   };
 
   const playCell = (e, currentPlayer) => {
@@ -219,7 +240,7 @@ const GameController = (() => {
     }
 
     GameBoard.addToken(currentPlayer.getToken(), board, row, column);
-    console.log(currentPlayer.getName() + ` Played ${row} , ${column}`);
+    //console.log(currentPlayer.getName() + ` Played ${row} , ${column}`);
     const win = GameBoard.checkWin(
       row,
       column,
@@ -231,10 +252,35 @@ const GameController = (() => {
     DisplayController.renderBoard(board, boardContainer);
     if (win) {
       display.winScreen(currentPlayer);
+      overlay.addEventListener("click", resetGame);
       return;
     }
     boardContainer.removeEventListener("click", playCell);
     playRound();
+  };
+
+  const resetGame = () => {
+    player1.setName("");
+    player2.setName("");
+    p1NameBtn.disabled = false;
+    p2NameBtn.disabled = false;
+    p1Input.disabled = false;
+    p2Input.disabled = false;
+    p1Input.value = "";
+    p2Input.value = "";
+    p1Label.textContent = `Player 1 Name: `;
+    p2Label.textContent = `Player 2 Name: `;
+    GameBoard.resetBoard();
+    display.renderBoard(board, boardContainer);
+    display.winScreen(currentPlayer);
+    display.resetTurn();
+    const tokenBtn = document.querySelectorAll(".tokenBtn");
+    tokenBtn.forEach((btn) => btn.classList.remove("selected"));
+    currentPlayer = player1;
+    if (player1.getActive() === false) {
+      player1.setActive();
+    }
+    chosen = false;
   };
 
   return { playRound, playCell, chooseToken, inputEvent };
