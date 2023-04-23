@@ -1,4 +1,6 @@
-button {
+button,
+html,
+body {
   border: none;
   padding: 0;
   margin: 0;
@@ -74,4 +76,31 @@ input {
 
 .tokenBtn.selected {
   background-color: green;
+}
+
+.win-overlay.active {
+  background-color: #81858980;
+  width: 100%;
+  height: 100vh;
+  color: black;
+  position: absolute;
+  transition: 1s;
+}
+
+.win-overlay > span {
+  display: none;
+}
+
+.win-overlay.active > span {
+  display: block;
+  position: absolute;
+  top: 50%;
+  /* left: 50%; */
+  transform: translateY(-50%);
+  font-size: 10rem;
+  color: green;
+  background-color: #81858990;
+  width: 100%;
+  text-align: center;
+  transition: 1s;
 }

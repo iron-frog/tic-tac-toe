@@ -21,9 +21,56 @@ const GameBoard = (() => {
     return position.includes("x" || "o") ? true : false;
   };
 
+  const checkWin = (row, column, board, token) => {
+    let rowMatch = 0;
+    let columnMatch = 0;
+    let diagAMatch = 0;
+    let diagBMatch = 0;
+    //Check horizontal
+    for (let i = 0; i < board[row].length; i++) {
+      if (board[row][i].includes(token) === false) {
+        break;
+      } else {
+        rowMatch += 1;
+      }
+    }
+    //check vertical
+    for (let i = 0; i < board.length; i++) {
+      if (board[i][column].includes(token) === false) {
+        break;
+      } else {
+        columnMatch += 1;
+      }
+    }
+
+    //check diagonal
+    if (row == column) {
+      for (let i = 0; i < board.length; i++) {
+        if (board[i][i].includes(token) === false) {
+          break;
+        } else {
+          diagAMatch += 1;
+        }
+      }
+    }
+
+    if (row + column == 2) {
+      for (let i = 0; i < board.length; i++) {
+        if (board[i][2 - i].includes(token) === false) {
+          break;
+        } else {
+          diagBMatch += 1;
+        }
+      }
+    }
+    if (rowMatch === 3 || columnMatch === 3 || diagAMatch === 3 || diagBMatch) {
+      return true;
+    }
+  };
+
   const getBoard = () => board;
 
-  return { initBoard, getBoard, addToken, checkCell };
+  return { initBoard, getBoard, addToken, checkCell, checkWin };
 })();
 
 const Player = () => {
@@ -39,6 +86,38 @@ const Player = () => {
   return { getName, getToken, getActive, setActive, setToken, setName };
 };
 
+//renders window
+const DisplayController = (() => {
+  const renderBoard = (board, boardContainer) => {
+    boardContainer.innerHTML = "";
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        const btn = document.createElement("button");
+        btn.textContent = board[i][j];
+        btn.dataset.row = i;
+        btn.dataset.column = j;
+        boardContainer.appendChild(btn);
+      }
+    }
+  };
+
+  const renderTurn = (player) => {
+    const turnText = document.querySelector(".turn-order");
+    turnText.textContent = `${player.getName()}'s turn: ${player.getToken()}`;
+  };
+
+  const winScreen = (player) => {
+    const winOverlay = document.querySelector(".win-overlay");
+    const winText = winOverlay.querySelector("span");
+    winOverlay.classList.toggle("active");
+    winText.classList.toggle("active");
+    winText.textContent = `${player.getName()} WINS!`;
+  };
+
+  return { renderBoard, winScreen, renderTurn };
+})();
+
+//Controls game flow
 const GameController = (() => {
   const boardContainer = document.querySelector(".board-container");
   const p1NameBtn = document.querySelector(".p1NameBtn");
@@ -54,6 +133,8 @@ const GameController = (() => {
   const board = GameBoard.getBoard();
   const player1 = Player();
   const player2 = Player();
+  const display = DisplayController;
+  display.renderBoard(board, boardContainer);
   //player2.setActive();
   let chosen = false;
   let currentPlayer = player1;
@@ -123,6 +204,7 @@ const GameController = (() => {
   const playRound = () => {
     currentPlayer = player1.getActive() ? player1 : player2;
     console.log(`${currentPlayer.getName()} turn:`, currentPlayer.getToken());
+    display.renderTurn(currentPlayer);
     console.table(board);
   };
 
@@ -135,11 +217,22 @@ const GameController = (() => {
     if (GameBoard.checkCell(row, column, board) == true) {
       return;
     }
+
     GameBoard.addToken(currentPlayer.getToken(), board, row, column);
     console.log(currentPlayer.getName() + ` Played ${row} , ${column}`);
+    const win = GameBoard.checkWin(
+      row,
+      column,
+      board,
+      currentPlayer.getToken()
+    );
     player1.setActive();
     player2.setActive();
-    DisplayController.renderBoard();
+    DisplayController.renderBoard(board, boardContainer);
+    if (win) {
+      display.winScreen(currentPlayer);
+      return;
+    }
     boardContainer.removeEventListener("click", playCell);
     playRound();
   };
@@ -147,29 +240,5 @@ const GameController = (() => {
   return { playRound, playCell, chooseToken, inputEvent };
 })();
 
-const DisplayController = (() => {
-  const boardContainer = document.querySelector(".board-container");
-  const board = GameBoard.getBoard();
-
-  const renderBoard = () => {
-    boardContainer.innerHTML = "";
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[i].length; j++) {
-        const btn = document.createElement("button");
-        btn.textContent = board[i][j];
-        btn.dataset.row = i;
-        btn.dataset.column = j;
-        boardContainer.appendChild(btn);
-      }
-    }
-    return board;
-  };
-
-  return { renderBoard };
-})();
-
 GameController.chooseToken();
 GameController.inputEvent();
-
-//GameController.playRound();
-DisplayController.renderBoard();
