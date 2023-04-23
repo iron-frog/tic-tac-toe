@@ -61,11 +61,8 @@ const GameBoard = (() => {
         }
       }
     }
-    console.log({ row, column });
     if (Number(row) + Number(column) == 2) {
-      console.log("hello");
       for (let i = 0; i < board.length; i++) {
-        //console.log({ row, column }, board[i + 1][2 - i]);
         if (board[i][2 - i].includes(token) === false) {
           break;
         } else {
@@ -126,12 +123,14 @@ const DisplayController = (() => {
     turnText.textContent = "Player 1 Starts";
   };
 
-  const winScreen = (player) => {
+  const winScreen = (player, draw) => {
     const winOverlay = document.querySelector(".win-overlay");
     const winText = winOverlay.querySelector("span");
     winOverlay.classList.toggle("active");
     winText.classList.toggle("active");
-    winText.textContent = `${player.getName()} WINS!`;
+    draw
+      ? (winText.textContent = `DRAW`)
+      : (winText.textContent = `${player.getName()} WINS!`);
   };
 
   return { renderBoard, winScreen, renderTurn, resetTurn };
@@ -159,6 +158,8 @@ const GameController = (() => {
   //player2.setActive();
   let chosen = false;
   let currentPlayer = player1;
+  let round = 0;
+  let draw = false;
 
   const inputEvent = () => {
     p1Form.addEventListener("submit", (e) => {
@@ -227,6 +228,8 @@ const GameController = (() => {
     //console.log(`${currentPlayer.getName()} turn:`, currentPlayer.getToken());
     display.renderTurn(currentPlayer);
     //console.table(board);
+    round += 1;
+    console.log(round);
   };
 
   const playCell = (e, currentPlayer) => {
@@ -250,11 +253,16 @@ const GameController = (() => {
     player1.setActive();
     player2.setActive();
     DisplayController.renderBoard(board, boardContainer);
-    if (win) {
-      display.winScreen(currentPlayer);
+    if (round == 8 && win != true) {
+      console.log("hhhh");
+      draw = true;
+    }
+    if (win || round == 8) {
+      display.winScreen(currentPlayer, draw);
       overlay.addEventListener("click", resetGame);
       return;
     }
+
     boardContainer.removeEventListener("click", playCell);
     playRound();
   };
@@ -281,6 +289,8 @@ const GameController = (() => {
       player1.setActive();
     }
     chosen = false;
+    round = 0;
+    draw = false;
   };
 
   return { playRound, playCell, chooseToken, inputEvent };
