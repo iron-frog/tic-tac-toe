@@ -120,7 +120,8 @@ const DisplayController = (() => {
   };
 
   const resetTurn = () => {
-    turnText.textContent = "Player 1 Starts";
+    turnText.textContent =
+      "Enter players' name and select token to begin. Player 1 starts.";
   };
 
   const winScreen = (player, draw) => {
@@ -189,14 +190,27 @@ const GameController = (() => {
         if (chosen === true) {
           return;
         }
+
         tokenBtn.forEach((btn) => btn.classList.remove("selected"));
-        e.target.classList.add("selected");
-        if (e.target.textContent == "o") {
-          player1.setToken("o");
-          player2.setToken("x");
+        const btnChoice = e.target;
+        btnChoice.classList.add("selected");
+        console.log(btnChoice.classList[1]);
+        if (btnChoice.classList[1] === "p1") {
+          if (btnChoice.textContent == "o") {
+            player1.setToken("o");
+            player2.setToken("x");
+          } else {
+            player2.setToken("o");
+            player1.setToken("x");
+          }
         } else {
-          player1.setToken("x");
-          player2.setToken("o");
+          if (btnChoice.textContent == "o") {
+            player2.setToken("o");
+            player1.setToken("x");
+          } else {
+            player2.setToken("x");
+            player1.setToken("o");
+          }
         }
         chosen = true;
         tokenBtn.forEach((btn) =>
